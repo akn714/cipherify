@@ -1,0 +1,20 @@
+{
+  "name": "cipherify",
+  "version": "1.0.0",
+  "description": "An online password saver to securily save all your passwords at one place.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akn714/cipherify.git"
+  },
+  "author": "Adarsh Kumar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/akn714/cipherify/issues"
+  },
+  "homepage": "https://github.com/akn714/cipherify#readme"
+}
