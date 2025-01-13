@@ -1,93 +1,66 @@
-const mongoose = require('mongoose')
-const dotenv = require('dotenv')
-const bcrypt = require('bcrypt')
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const bcrypt = require('bcrypt');
 
-dotenv.config()
+// Load environment variables
+dotenv.config();
 
-const db_link = process.env.DB_LINK
-mongoose.connect(db_link)
-.then((db)=>{
-    console.log('[+] student db connceted')
-})
-.catch((err)=>{
-    console.error('[+]', err)
-})
+// Validate environment variables
+if (!process.env.DB_LINK) {
+    throw new Error('Missing JWT_KEY in environment variables');
+}
+const db_link = process.env.DB_LINK;
 
-const studentSchema = mongoose.Schema({
-    name:{
+// Connect to MongoDB Atlas (Online MongoDB)
+mongoose
+    .connect(db_link)
+    .then(() => {
+        console.log('[+] Database connected successfully');
+    })
+    .catch((err) => {
+        console.log('[-] Database connection error:', err);
+    });
+
+// Define a schema
+const Schema = mongoose.Schema({
+    name: {
         type: String,
-        require: true
+        required: true,
     },
-    email:{
+    email: {
         type: String,
-        require: true,
-        lowercase: true
+        required: true,
+        lowercase: true,
     },
-    dob: {
-        type: String // encrypted dob
-    },
-    roll_no:{
-        type: Number,
-        require: true
-    },
-    branch:{
+    password: {
         type: String,
-        require: true
+        required: true,
     },
-    year:{
-        type: Number,
-        require: true
-    },
-    password:{
+    profileImage: {
         type: String,
-        require: true
+        default: 'img/default.jpeg',
     },
-    confirmPassword:{
-        type: String,
-        require: true
-    },
-    profileImage:{
-        type: String,
-        default: 'img/users/default.jpeg'
-    },
-    cgpa:{
-        type: Number // calculating average from sgpa array
-    },
-    enrollment_no:{
-        type: Number
-    },
-    sgpa: [[Number]], // per year per sem [[sem 1, sem 2], [sem 3, sem 4], [sem 5, sem 6], [sem 7, sem 8]]
-    attendence: [[Number]], // per year per sem [[sem 1, sem 2], [sem 3, sem 4], [sem 5, sem 6], [sem 7, sem 8]]
-    internal_marks_records: [
-        {
-            SUBJECT_CODE: {
-                CT: { type: String, default: "" },
-                AT: { type: String, default: "" },
-                ATTENDENCE_MARKS: { type: String, default: "" },
-                ASSIGNMENT_MARKS: { type: String, default: "" },
-                TOTAL: { type: String, default: "" }
-            }
-        }
-    ],
     createdAt: {
         type: Date,
-        default: () => Date.now()
+        default: () => Date.now(),
+    },
+    // Add additional fields as needed
+    customFields: {
+        type: mongoose.Schema.Types.Mixed, // Flexible field for custom data
+        default: {},
+    },
+});
+
+// Pre-save hook for hashing password
+Schema.pre('save', async function () {
+    if (this.isModified('password')) {
+        const salt = await bcrypt.genSalt();
+        const hashedPassword = await bcrypt.hash(this.password, salt);
+        this.password = hashedPassword;
     }
-})
+});
 
-// hashing | pre hook
-studentSchema.pre('save', async function(){
-    const salt = await bcrypt.genSalt();
-    // console.log('[+] salt:', salt);
-    const hashedPassword = await bcrypt.hash(this.password, salt);
-    // console.log(`[+] ${hashedPassword} is hashed password for ${this.password}`);
+// Create and export the model
+const Model = mongoose.model('Model', Schema);
 
-    // saving hashed password
-    this.password = hashedPassword
-    this.confirmPassword = undefined
-})
-
-const studentModel = mongoose.model('studentModel', studentSchema)
-
-module.exports = studentModel
-
+module.exports = Model;
