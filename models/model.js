@@ -22,7 +22,7 @@ mongoose
     });
 
 // Define a schema
-const Schema = mongoose.Schema({
+const Schema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -36,19 +36,29 @@ const Schema = mongoose.Schema({
         type: String,
         required: true,
     },
-    profileImage: {
-        type: String,
-        default: 'img/default.jpeg',
+    secrets: {
+        type: [
+            {
+                URL: {
+                    type: String,
+                    default: '',
+                },
+                USERNAME: {
+                    type: String,
+                    default: '',
+                },
+                PASSWORD: {
+                    type: String,
+                    default: '',
+                },
+            },
+        ],
+        default: [], // Default value for the secrets field
     },
     createdAt: {
         type: Date,
         default: () => Date.now(),
-    },
-    // Add additional fields as needed
-    customFields: {
-        type: mongoose.Schema.Types.Mixed, // Flexible field for custom data
-        default: {},
-    },
+    }
 });
 
 // Pre-save hook for hashing password

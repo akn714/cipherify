@@ -118,7 +118,7 @@ module.exports = {
     if (req.cookies.login) {
       return res.send({ message: "Ongoing session detected!" });
     }
-    // res.sendFile(path.join(__dirname, "../views/html/signup.html"));
+    res.sendFile(path.join(__dirname, "../views/html/signup.html"));
   },
 
   get_login_page(req, res) {

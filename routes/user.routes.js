@@ -12,6 +12,9 @@ const router = express.Router();
 
 router.use(authorize_user); // Middleware for authentication (applied to every private route)
 router.get('/', controller.get_secrets_page);
+router.get('/add-secret', controller.get_add_secret_page);
+router.get('/get-secrets', controller.get_secrets);
+router.post('/add-secret', controller.add_secret);
 
 // router.use((req, res) => {
 //     res.redirect('/');

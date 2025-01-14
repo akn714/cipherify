@@ -40,7 +40,7 @@ app.get('/unauthorized', (req, res) => {
 // Home route
 app.get('/', isLoggedIn, (req, res) => {
     try {
-        res.status(404).sendFile(path.join(__dirname, '/views/html/home.html'));
+        res.status(200).sendFile(path.join(__dirname, '/views/html/home.html'));
     } catch (error) {
         console.error('[-] Error in home route:', error.message);
         res.status(500).json({
