@@ -8,6 +8,11 @@ window.onload = () => {
 
 async function fetchSecret() {
     try {
+        let secrets = document.querySelector('.container');
+        let loading = document.createElement('p');
+        loading.innerText = 'Loading...';
+        secrets.appendChild(loading);
+
         const response = await fetch('/user/get-secrets', {
             method: 'GET',
             headers: {
@@ -26,6 +31,7 @@ async function fetchSecret() {
 function displaySecrets(data) {
 
     let secrets = document.querySelector('.container');
+    secrets.removeChild(secrets.lastElementChild)
     
     for(let i=0;i<data.length;i++){
         let new_secret = document.createElement('div');
@@ -62,6 +68,10 @@ function displaySecrets(data) {
     }
 }
 
+function deleteSecret(button) {
+    // implementation left
+}
+
 function toggleView(button) {
     const valueElement = button.previousElementSibling;
     const isHidden = valueElement.classList.contains("hidden");
@@ -92,5 +102,12 @@ function copyToClipboard(button) {
 const add_secret = document.querySelector('.form-container');
 add_secret.style.visibility = 'hidden';
 function toggleAddSecret() {
-    add_secret.style.visibility=='hidden'?add_secret.style.visibility='visible':add_secret.style.visibility='hidden';
+    if(add_secret.style.visibility=='hidden'){
+        add_secret.style.visibility = 'visible';
+        document.body.style.overflow = 'hidden';
+    }
+    else{
+        add_secret.style.visibility = 'hidden';
+        document.body.style.overflow = 'scroll';
+    }
 }

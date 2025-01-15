@@ -21,7 +21,7 @@ const { isLoggedIn } = require('./controllers/auth.controller');
 // Middlewares
 app.use(express.urlencoded({ extended: true })); // Parse form data
 app.use(cookieParser());
-app.use(express.static('public')); // Serve static files
+app.use(express.static(path.join(__dirname, 'public'))); // Serve static files
 app.use(log); // logging method and url of all incomming request
 app.set('views', path.join(__dirname, 'views')); // Set views directory
 
