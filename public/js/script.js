@@ -42,6 +42,7 @@ function displaySecrets(data) {
         <p>URL:</p>
             <div class="value">${data[i].URL}</div>
             <!-- <button class="copy-link" onclick="copyToClipboard(this)">Copy</button> -->
+            <button class="delete-secret" onclick="deleteSecret(this)">Delete</button>
         </div>
         <div class="row">
             <div class="row-username">

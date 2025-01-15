@@ -6,8 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login</title>
     <style>
+        :root {
+            --theme-primary: #7649ff;
+            --theme-secondary: #1c1c1c;
+            --theme-danger: #f66;
+            --theme-border: #6966ff33;
+            --theme-shadow: rgba(32, 20, 255, 0.5);
+        }
         body {
-            background-color: #f8f9fa;
+            background-color: var(--theme-secondary);
             font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
@@ -17,19 +24,22 @@
         }
 
         .form-container {
-            background-color: white;
+            background-color: transparent;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 400px;
+
+            box-shadow: inset 0px 0px 75px -30px #2a00aa;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.53);
         }
 
         .form-container h2 {
             text-align: center;
             margin-bottom: 20px;
             font-size: 24px;
-            color: #333;
+            color: var(--theme-primary);
         }
 
         form {
@@ -46,23 +56,26 @@
         .form-group label {
             font-weight: bold;
             margin-bottom: 5px;
-            color: #333;
+            color: #e0e0e0;
         }
 
         .form-group input {
-            border-radius: 5px;
             padding: 12px;
             font-size: 16px;
-            border: 1px solid #ccc;
+            border: none;
+            border-radius: 5px;
+            background-color: #444;
+            color: #e0e0e0;
         }
 
         .form-group input:focus {
-            border-color: #007bff;
             outline: none;
+            box-shadow: 0 0 5px rgba(112, 102, 255, 0.8);
+            border: 1px solid var(--theme-primary);
         }
 
         button[type="submit"] {
-            background-color: #007bff;
+            background-color: var(--theme-primary);
             color: white;
             border: none;
             border-radius: 5px;
@@ -73,7 +86,13 @@
         }
 
         button[type="submit"]:hover {
-            background-color: #0056b3;
+            background-color: #602bff;
+        }
+        
+        @media (max-width: 700px) {
+            .form-container {
+                max-width: calc(80vw - 10px);
+            }
         }
     </style>
 </head>

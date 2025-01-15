@@ -1,6 +1,14 @@
+:root {
+    --theme-primary: #7649ff;
+    /* --theme-secondary: #2a2a2a; */
+    --theme-secondary: #1c1c1c;
+    --theme-danger: #f66;
+    --theme-border: #6966ff33;
+    --theme-shadow: rgba(32, 20, 255, 0.5);
+}
 
 body {
-    background-color: #f8f9fa;
+    background-color: var(--theme-secondary);
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
@@ -10,18 +18,21 @@ body {
 }
 
 .container {
-    background-color: white;
+    background-color: transparent;
     padding: 40px;
     border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.53);
     text-align: center;
     width: 100%;
     max-width: 400px;
+
+    /* box-shadow: inset 0px 0px 75px -30px #2a00aa; */
+    /* box-shadow: inset 0px -64px 75px -30px #2a00aa; */
 }
 
 h2 {
     font-size: 24px;
-    color: #333;
+    color: var(--theme-primary);
     margin-bottom: 20px;
 }
 
@@ -29,7 +40,7 @@ a {
     display: block;
     margin: 15px 0;
     padding: 12px;
-    background-color: #007bff;
+    background-color: var(--theme-primary);
     color: white;
     text-decoration: none;
     border-radius: 5px;
@@ -39,5 +50,11 @@ a {
 }
 
 a:hover {
-    background-color: #0056b3;
+    background-color: #602bff;
+}
+
+@media (max-width: 700px) {
+    .container {
+        max-width: calc(80vw - 40px);
+    }
 }
