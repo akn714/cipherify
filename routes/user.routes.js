@@ -14,6 +14,7 @@ router.use(authorize_user); // Middleware for authentication (applied to every p
 router.get('/', controller.get_secrets_page);
 router.get('/add-secret', controller.get_add_secret_page);
 router.get('/get-secrets', controller.get_secrets);
+router.post('/delete-secret', controller.delete_secret);
 router.post('/add-secret', controller.add_secret);
 
 // router.use((req, res) => {

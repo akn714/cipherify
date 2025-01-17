@@ -85,10 +85,24 @@ const add_secret = async (req, res) => {
     }
 }
 
+const delete_secret = async (req, res) => {
+    try {
+        // implementation left
+        res.status(200).json({
+            message: 'deleting secret'
+        })
+    } catch (error) {
+        res.status(500).json({
+            error: error
+        })
+    }
+}
+
 // Exports
 module.exports = {
     get_secrets,
     get_secrets_page,
     add_secret,
-    get_add_secret_page
+    get_add_secret_page,
+    delete_secret
 };

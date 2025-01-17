@@ -47,6 +47,9 @@ a {
     font-size: 16px;
     text-align: center;
     transition: background-color 0.3s ease;
+    /* background: linear-gradient(90deg,#1c1c1c, #2f2f2f, #1c1c1c);
+    border: 1px solid #333;
+    color: #bfbfbf; */
 }
 
 a:hover {
