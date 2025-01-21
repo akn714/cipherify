@@ -78,16 +78,16 @@ async function decrypt(pin, encryptedData, iv) {
 }
 
 // Example usage:
-(async () => {
-    PIN = "123456";
-    const originalText = "Hello, Secure Worsd!";
+// (async () => {
+//     PIN = "123456";
+//     const originalText = "Hello, Secure Worsd!";
     
-    // Encrypt
-    const { encrypted, iv } = await encrypt(PIN, originalText);
-    console.log("Encrypted:", encrypted);
-    console.log("IV:", iv);
+//     // Encrypt
+//     const { encrypted, iv } = await encrypt(PIN, originalText);
+//     console.log("Encrypted:", encrypted);
+//     console.log("IV:", iv);
 
-    // Decrypt
-    const decryptedText = await decrypt(PIN, encrypted, iv);
-    console.log("Decrypted:", decryptedText);
-})();
+//     // Decrypt
+//     const decryptedText = await decrypt(PIN, encrypted, iv);
+//     console.log("Decrypted:", decryptedText);
+// })();

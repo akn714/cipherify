@@ -87,16 +87,36 @@ const add_secret = async (req, res) => {
 
 const delete_secret = async (req, res) => {
     try {
-        // implementation left
-        res.status(200).json({
-            message: 'deleting secret'
-        })
+        let { URL } = req.body;
+
+        // Validate the input
+        if (!URL) {
+            return res.status(400).json({ error: 'URL is required to delete a secret' });
+        }
+
+        // Delete the secret from the user's secrets array
+        const updatedSecrets = await Model.findByIdAndUpdate(
+            req.id,
+            {
+                $pull: { secrets: { URL } },
+            },
+            { new: true }
+        );
+
+        if (updatedSecrets) {
+            return res.status(200).json({
+                updatedSecrets: updatedSecrets.secrets
+            });
+        }
+        
+        return res.status(404).json({ error: 'User not found or URL does not exist' });
     } catch (error) {
+        console.error('[-] Error while deleting secret:', error);
         res.status(500).json({
-            error: error
-        })
+            error: 'An error occurred while deleting the secret'
+        });
     }
-}
+};
 
 // Exports
 module.exports = {

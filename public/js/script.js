@@ -6,6 +6,47 @@ window.onload = () => {
     fetchSecret();
 }
 
+function displaySecrets(data) {
+
+    let secrets = document.querySelector('.container');
+    // secrets.removeChild(secrets.lastElementChild)
+    
+    if(data.length==0){
+        let empty_message = document.createElement('h3');
+        empty_message.innerText = 'No secrets available!';
+        secrets.appendChild(empty_message);
+        return;
+    }
+
+    for(let i=0;i<data.length;i++){
+        let new_secret = document.createElement('div');
+        new_secret.setAttribute('class', 'secret');
+
+        new_secret.innerHTML = `
+        <div class="row">
+            <p>URL:</p>
+            <div class="value">${data[i].URL}</div>
+            <!-- <button class="copy-link" onclick="copyToClipboard(this)">Copy</button> -->
+            <button id='${data[i].URL}' class="delete-secret" onclick="deleteSecret(this)">Delete</button>
+        </div>
+        <div class="row">
+            <div class="row-username">
+            <div class="value hidden">${data[i].USERNAME}</div>
+            <button class="view-toggle" onclick="toggleView(this)">View</button>
+            <button class="copy-link" onclick="copyToClipboard(this)">Copy</button>
+            </div>
+            <p>:</p>
+            <div class="row-value">
+                <div class="value hidden">${data[i].PASSWORD}</div>
+                <button class="view-toggle" onclick="toggleView(this)">View</button>
+                <button class="copy-link" onclick="copyToClipboard(this)">Copy</button>
+            </div>
+        </div>`;
+
+        secrets.appendChild(new_secret);
+    }
+}
+
 async function fetchSecret() {
     try {
         let secrets = document.querySelector('.container');
@@ -20,57 +61,53 @@ async function fetchSecret() {
             },
         });
 
-        data = await response.json();
 
-        displaySecrets(data.data);
+        data = await response.json();
+        if(data){
+            secrets.removeChild(secrets.lastElementChild);
+            displaySecrets(data.data);
+        }
     } catch (error) {
         console.error('Error fetching secret:', error);
     }
 }
 
-function displaySecrets(data) {
+async function deleteSecret(button) {
+    try {
+        let data = {
+            URL: button.id
+        }
+        button.innerText = 'Deleting...';
+        const response = await fetch('/user/delete-secret', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data),
+        });
 
-    let secrets = document.querySelector('.container');
-    secrets.removeChild(secrets.lastElementChild)
-    
-    for(let i=0;i<data.length;i++){
-        let new_secret = document.createElement('div');
-        new_secret.setAttribute('class', 'secret');
+        if(response.ok){
+            let secrets = document.querySelector('.container');
+            secrets.innerHTML = '<h2>Ciphers</h2><p>Loading...</p>';
+            let res = await response.json();
+            if(res){
+                secrets.removeChild(secrets.lastElementChild)
+                displaySecrets(res.updatedSecrets)
+            }
+        }
 
-        new_secret.innerHTML = `
-        <div class="row">
-        <p>URL:</p>
-            <div class="value">${data[i].URL}</div>
-            <!-- <button class="copy-link" onclick="copyToClipboard(this)">Copy</button> -->
-            <button class="delete-secret" onclick="deleteSecret(this)">Delete</button>
-        </div>
-        <div class="row">
-            <div class="row-username">
-                <div class="value hidden">${data[i].USERNAME}</div>
-                <button class="view-toggle" onclick="toggleView(this)">View</button>
-                <button class="copy-link" onclick="copyToClipboard(this)">Copy</button>
-            </div>
-            <p>:</p>
-            <div class="row-value">
-                <div class="value hidden">${data[i].PASSWORD}</div>
-                <button class="view-toggle" onclick="toggleView(this)">View</button>
-                <button class="copy-link" onclick="copyToClipboard(this)">Copy</button>
-            </div>
-        </div>`;
-
-        secrets.appendChild(new_secret);
+        // if (response.ok) {
+        //     const responseData = await response.json();
+        //     if(responseData[0]=='ok') window.location = '/';
+        //     else alert('Error from server', responseData[0]);
+        //     console.log('Response from server:', responseData[0]);
+        // } else {
+        //     console.error('Failed to fetch:', response.statusText);
+        // }        
+    } catch (error) {
+        console.log(error)
+        alert('An error occured!');
     }
-
-
-    if(secrets.childElementCount<=1){
-        let empty_message = document.createElement('h3');
-        empty_message.innerText = 'No secrets available!';
-        secrets.appendChild(empty_message);
-    }
-}
-
-function deleteSecret(button) {
-    // implementation left
 }
 
 function toggleView(button) {

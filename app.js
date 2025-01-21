@@ -19,6 +19,7 @@ const auth_routes = require('./routes/auth.routes');
 const { isLoggedIn } = require('./controllers/auth.controller');
 
 // Middlewares
+app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Parse form data
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public'))); // Serve static files
