@@ -133,18 +133,22 @@ module.exports = {
       const role = ROLES.USER; // (update) you can provide roles from req.body
       if (!role) return res.json({ message: "Role is required!" });
 
+      const iv = crypto.getRandomValues(new Uint8Array(12)); // Generate a random initialization vector (IV) for encrypting and decrypting secrets
+
       const userData = role === ROLES.ADMIN
         ? { // admin data
             [USER_KEYS.NAME]: req.body.name,
             [USER_KEYS.EMAIL]: req.body.email,
             [USER_KEYS.PASSWORD]: req.body.password,
             [USER_KEYS.CONFIRM_PASSWORD]: req.body.confirmPassword,
+            [USER_KEYS.IV]: iv
           }
         : { // user data
             [USER_KEYS.NAME]: req.body.name,
             [USER_KEYS.EMAIL]: req.body.email,
             [USER_KEYS.PASSWORD]: req.body.password,
             [USER_KEYS.CONFIRM_PASSWORD]: req.body.confirmPassword,
+            [USER_KEYS.IV]: iv
           };
 
       const [isValid, validationMessage] = await validateUserData(role, userData);
@@ -156,6 +160,7 @@ module.exports = {
         const token = jwt.sign({ payload: user["_id"] }, JWT_KEY);
         res.cookie(COOKIES.LOGIN, token, { maxAge: 86400000, httpOnly: true });
         res.cookie(COOKIES.ROLE, role, { maxAge: 86400000, httpOnly: true });
+        res.cookie(COOKIES.IV, iv, { maxAge: 86400000, httpOnly: true });
 
         // return res.status(200).json({ message: `${role} signed up`, data: user });
         return res.redirect('/user');
@@ -190,6 +195,7 @@ module.exports = {
         const token = jwt.sign({ payload: user["_id"] }, JWT_KEY);
         res.cookie(COOKIES.LOGIN, token, { maxAge: 86400000, httpOnly: true });
         res.cookie(COOKIES.ROLE, role, { maxAge: 86400000, httpOnly: true });
+        res.cookie(COOKIES.IV, 'user.iv', { maxAge: 86400000, httpOnly: false });
 
         // return res.status(200).json({ message: `${role} has logged in`, details: user });
         return res.redirect('/user');
@@ -206,6 +212,7 @@ module.exports = {
       if (req.cookies.login) {
         res.clearCookie(COOKIES.LOGIN);
         res.clearCookie(COOKIES.ROLE);
+        res.clearCookie(COOKIES.IV);
       }
       res.redirect("/");
     } catch (error) {

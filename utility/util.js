@@ -8,12 +8,14 @@ let USER_KEYS = {
     EMAIL: "email",
     PASSWORD: 'password',
     CONFIRM_PASSWORD: 'confirmPassword',
+    IV: 'iv',
     PROFILE_IMAGE: "profileImage",
 }
 
 let COOKIES = {
     LOGIN: "login",
-    ROLE: "role"
+    ROLE: "role",
+    IV: 'iv'
 }
 
 let MESSAGE = {
