@@ -56,11 +56,12 @@ const add_secret = async (req, res) => {
         const newSecret = {
             URL: req.body.url,
             USERNAME: req.body.username,
-            PASSWORD: req.body.password
+            PASSWORD: req.body.password,
+            IV: req.body.iv
         };
         
         // Fetch the user, modify the array, and save
-        Model.findById(req.id) // Replace with the user's ID
+        Model.findById(req.id)
             .then(user => {
                 if (!user) {
                     throw new Error('User not found');

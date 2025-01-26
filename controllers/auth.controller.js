@@ -133,7 +133,7 @@ module.exports = {
       const role = ROLES.USER; // (update) you can provide roles from req.body
       if (!role) return res.json({ message: "Role is required!" });
 
-      const iv = crypto.getRandomValues(new Uint8Array(12)); // Generate a random initialization vector (IV) for encrypting and decrypting secrets
+      // const iv = crypto.getRandomValues(new Uint8Array(12)); // Generate a random initialization vector (IV) for encrypting and decrypting secrets
 
       const userData = role === ROLES.ADMIN
         ? { // admin data
@@ -141,26 +141,39 @@ module.exports = {
             [USER_KEYS.EMAIL]: req.body.email,
             [USER_KEYS.PASSWORD]: req.body.password,
             [USER_KEYS.CONFIRM_PASSWORD]: req.body.confirmPassword,
-            [USER_KEYS.IV]: iv
+            [USER_KEYS.IV]: req.body.iv
           }
         : { // user data
             [USER_KEYS.NAME]: req.body.name,
             [USER_KEYS.EMAIL]: req.body.email,
             [USER_KEYS.PASSWORD]: req.body.password,
             [USER_KEYS.CONFIRM_PASSWORD]: req.body.confirmPassword,
-            [USER_KEYS.IV]: iv
+            [USER_KEYS.IV]: req.body.iv
           };
+      console.log(userData);
 
       const [isValid, validationMessage] = await validateUserData(role, userData);
       if (!isValid) return res.json({ message: validationMessage });
 
       const model = role === ROLES.ADMIN ? Model : Model; // (update) you can add an admin model also
-      const user = await model.create(userData);
+      
+      const userExists = await Model.findOne({ [USER_KEYS.EMAIL]: req.body.email });
+      if (userExists) {
+        // 409 - conflict (user already exist)
+        console.log(`[-] User already exist. ${userData[USER_KEYS.EMAIL]}`)
+        return res.status(409).json({
+          message: 'User already exists. Please login!'
+        })
+      }
+
+      const user = await Model.create(userData);
+
       if (user) {
+        console.log(user)
         const token = jwt.sign({ payload: user["_id"] }, JWT_KEY);
         res.cookie(COOKIES.LOGIN, token, { maxAge: 86400000, httpOnly: true });
         res.cookie(COOKIES.ROLE, role, { maxAge: 86400000, httpOnly: true });
-        res.cookie(COOKIES.IV, iv, { maxAge: 86400000, httpOnly: true });
+        res.cookie(COOKIES.IV, req.body.iv, { maxAge: 86400000, httpOnly: true });
 
         // return res.status(200).json({ message: `${role} signed up`, data: user });
         return res.redirect('/user');
@@ -195,7 +208,7 @@ module.exports = {
         const token = jwt.sign({ payload: user["_id"] }, JWT_KEY);
         res.cookie(COOKIES.LOGIN, token, { maxAge: 86400000, httpOnly: true });
         res.cookie(COOKIES.ROLE, role, { maxAge: 86400000, httpOnly: true });
-        res.cookie(COOKIES.IV, 'user.iv', { maxAge: 86400000, httpOnly: false });
+        res.cookie(COOKIES.IV, user.iv, { maxAge: 86400000, httpOnly: false });
 
         // return res.status(200).json({ message: `${role} has logged in`, details: user });
         return res.redirect('/user');

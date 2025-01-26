@@ -71,7 +71,7 @@
             border: 1px solid var(--theme-primary);
         }
 
-        button[type="submit"] {
+        button {
             background-color: var(--theme-primary);
             color: white;
             border: none;
@@ -82,7 +82,7 @@
             transition: background-color 0.3s ease;
         }
 
-        button[type="submit"]:hover {
+        button:hover {
             background-color: #602bff;
         }
 
@@ -94,25 +94,63 @@
     </style>
 </head>
 <body>
-    <form action="/auth/signup" method="post">
+    <form id="signupForm">
         <h2>Signup</h2>
         <div class="form-group">
             <label for="name">Name</label>
-            <input type="text" name="name" id="name" placeholder="Enter your name">
+            <input type="text" name="name" id="name" placeholder="Enter your name" required>
         </div>
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" name="email" id="email" placeholder="Enter your email">
+            <input type="email" name="email" id="email" placeholder="Enter your email" required>
         </div>
         <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" name="password" id="password" placeholder="Enter your password">
+            <input type="password" name="password" id="password" placeholder="Enter your password" required>
         </div>
         <div class="form-group">
             <label for="confirmPassword">Confirm Password</label>
-            <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm your password">
+            <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm your password" required>
         </div>
-        <button type="submit">Submit</button>
+        <button type="button" onclick="signup()">Submit</button>
     </form>
+    
+    <script>
+        const iv = crypto.getRandomValues(new Uint8Array(12)); // Generate a random initialization vector (IV)
+    
+        async function signup() {
+            const form = document.getElementById('signupForm');
+            const formData = new FormData(form);
+    
+            // Add the IV to the form data as a base64 string
+            formData.append('iv', btoa(String.fromCharCode(...iv)));
+    
+            // Convert form data to JSON
+            const body = {};
+            formData.forEach((value, key) => {
+                body[key] = value;
+            });
+    
+            try {
+                const response = await fetch('/auth/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                });
+    
+                if (response.ok) {
+                    window.location = '/user';
+                } else {
+                    const error = await response.json();
+                    alert(`Signup failed: ${error.message}`);
+                }
+            } catch (error) {
+                console.error('Error during signup:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+    </script>    
 </body>
 </html>

@@ -35,11 +35,11 @@ async function deriveKey(pin) {
     );
 }
 
-async function encrypt(pin, inputString) {
+async function encrypt(pin, inputString, iv) {
     const key = await deriveKey(pin);
     const encoder = new TextEncoder();
     const data = encoder.encode(inputString);
-    const iv = document.cookie.split(';')[2].trim().split('=')[1];
+    // const iv = document.cookie.split(';')[2].trim().split('=')[1];
 
     // const iv = crypto.getRandomValues(new Uint8Array(12)); // Generate a random initialization vector (IV)
     // const iv = "eZQY1CRM03rdGDht"; // Generate a random initialization vector (IV)
@@ -52,10 +52,7 @@ async function encrypt(pin, inputString) {
         data
     );
 
-    return {
-        encrypted: btoa(String.fromCharCode(...new Uint8Array(encrypted))), // Convert to Base64
-        iv: btoa(String.fromCharCode(...iv)), // Include IV for decryption
-    };
+    return btoa(String.fromCharCode(...new Uint8Array(encrypted))); // Convert to Base64
 }
 
 async function decrypt(pin, encryptedData, iv) {

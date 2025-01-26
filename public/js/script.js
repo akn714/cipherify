@@ -60,10 +60,17 @@ async function fetchSecret() {
                 'Content-Type': 'application/json',
             },
         });
-
-
         data = await response.json();
         if(data){
+            let temp;
+            let PIN = parseInt(prompt('enter a 6 digit pin'));
+            for(let i=0;i<data.length;i++){
+                temp = data[0].USERNAME;
+                data[0].USERNAME = await decrypt(PIN, temp, data[0].IV);
+                temp = data[0].PASSWORD;
+                data[0].PASSWORD = await decrypt(PIN, temp, data[0].IV);
+            }
+            console.log(data)
             secrets.removeChild(secrets.lastElementChild);
             displaySecrets(data.data);
         }

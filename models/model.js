@@ -36,10 +36,10 @@ const Schema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    // iv: {
-    //     type: String,
-    //     required: true
-    // },
+    iv: {
+        type: String,
+        required: true
+    },
     secrets: {
         type: [
             {
@@ -55,6 +55,10 @@ const Schema = new mongoose.Schema({
                     type: String,
                     default: '',
                 },
+                IV: {
+                    type: String,
+                    default: ''
+                }
             },
         ],
         default: [], // Default value for the secrets field
