@@ -3,7 +3,7 @@
 ### till now
 - added secrets after encrypting
 - todo:
-    - [ ] decrypting secrets using pin on client side
+    - [x] decrypting secrets using pin on client side
     - [ ] removing IV from user db (iv will be in secrets array)
 
 ### Security

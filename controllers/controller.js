@@ -14,6 +14,7 @@ const get_secrets = async (req, res) => {
         // let student = await studentModel.find({[USER_KEYS]: year}, `${S_KEYS.NAME} ${S_KEYS.ROLL_NO} ${S_KEYS.BRANCH} ${S_KEYS.YEAR}`);
         let user = await Model.findById(req.id);
         if(user){
+            // console.log(user.secrets)
             return res.status(200).json({
                 data: user.secrets
             });

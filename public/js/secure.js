@@ -1,8 +1,8 @@
-let PIN = null;
-// let IV = crypto.getRandomValues(new Uint8Array(12)); // Generate a random initialization vector (IV)
-// let IV = document.cookie.split(';')[2].trim().split('=')[1];
+PIN = null;
 
-console.log('loaded secure.js')
+// Use a static IV (highly discouraged unless you fully understand the risks).
+
+console.log('loaded secure.js');
 
 async function deriveKey(pin) {
     if (!/^\d{6}$/.test(pin)) {
@@ -35,37 +35,32 @@ async function deriveKey(pin) {
     );
 }
 
-async function encrypt(pin, inputString, iv) {
+async function encrypt(pin, inputString, IV) {
     const key = await deriveKey(pin);
     const encoder = new TextEncoder();
     const data = encoder.encode(inputString);
-    // const iv = document.cookie.split(';')[2].trim().split('=')[1];
 
-    // const iv = crypto.getRandomValues(new Uint8Array(12)); // Generate a random initialization vector (IV)
-    // const iv = "eZQY1CRM03rdGDht"; // Generate a random initialization vector (IV)
     const encrypted = await crypto.subtle.encrypt(
         {
             name: "AES-GCM",
-            iv
+            iv: IV, // Use the static IV
         },
         key,
         data
     );
 
-    return btoa(String.fromCharCode(...new Uint8Array(encrypted))); // Convert to Base64
+    return btoa(String.fromCharCode(...new Uint8Array(encrypted))); // Convert to Base64;
 }
 
-async function decrypt(pin, encryptedData, iv) {
+async function decrypt(pin, encryptedData, IV) {
     const key = await deriveKey(pin);
-
     const decoder = new TextDecoder();
     const encryptedBuffer = Uint8Array.from(atob(encryptedData), (c) => c.charCodeAt(0));
-    const ivBuffer = Uint8Array.from(atob(iv), (c) => c.charCodeAt(0));
 
     const decrypted = await crypto.subtle.decrypt(
         {
             name: "AES-GCM",
-            iv: ivBuffer,
+            iv: IV
         },
         key,
         encryptedBuffer
@@ -75,16 +70,18 @@ async function decrypt(pin, encryptedData, iv) {
 }
 
 // Example usage:
+// let IV = crypto.getRandomValues(new Uint8Array(12));
 // (async () => {
 //     PIN = "123456";
-//     const originalText = "Hello, Secure Worsd!";
-    
+//     // const IV = new Uint8Array([123, 234, 56, 78, 90, 12, 34, 56, 78, 90, 123, 234]); // Example static IV (12 bytes).
+//     const originalText = "Hello, Secure World!";
+
+//     console.log('IV', btoa(String.fromCharCode(...IV)));
 //     // Encrypt
-//     const { encrypted, iv } = await encrypt(PIN, originalText);
+//     const encrypted = await encrypt(PIN, originalText, IV);
 //     console.log("Encrypted:", encrypted);
-//     console.log("IV:", iv);
 
 //     // Decrypt
-//     const decryptedText = await decrypt(PIN, encrypted, iv);
+//     const decryptedText = await decrypt(PIN, encrypted, IV);
 //     console.log("Decrypted:", decryptedText);
 // })();

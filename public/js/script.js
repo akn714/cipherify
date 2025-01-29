@@ -63,16 +63,26 @@ async function fetchSecret() {
         data = await response.json();
         if(data){
             let temp;
-            let PIN = parseInt(prompt('enter a 6 digit pin'));
+            let PIN = prompt('enter a 6 digit pin');
+            let IV;
+            let x;
+            // let IV = Uint8Array.from(atob(data.data[0].IV), (c) => c.charCodeAt(0));
+            // let x = await decrypt(PIN, data.data[0].USERNAME, IV);
+            data = data.data;
             for(let i=0;i<data.length;i++){
-                temp = data[0].USERNAME;
-                data[0].USERNAME = await decrypt(PIN, temp, data[0].IV);
-                temp = data[0].PASSWORD;
-                data[0].PASSWORD = await decrypt(PIN, temp, data[0].IV);
+                IV = Uint8Array.from(atob(data[i].IV), (c) => c.charCodeAt(0));
+
+                temp = data[i].USERNAME;
+                x = await decrypt(PIN, temp, IV);
+                data[i].USERNAME = x;
+
+                temp = data[i].PASSWORD;
+                x = await decrypt(PIN, temp, IV);
+                data[i].PASSWORD = x;
             }
-            console.log(data)
+            // console.log(data)
             secrets.removeChild(secrets.lastElementChild);
-            displaySecrets(data.data);
+            displaySecrets(data);
         }
     } catch (error) {
         console.error('Error fetching secret:', error);
