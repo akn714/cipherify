@@ -41,16 +41,16 @@ const get_secrets_page = async (req, res) => {
     }
 }
 
-const get_add_secret_page = (req, res) => {
-    try {
-        return res.status(200).sendFile(path.join(__dirname, '../views/html/add_secret.html'));
-    } catch (error) {
-        console.error('[-] Error in user route:', error.message);
-        return res.status(500).json({
-            error: error.message
-        });
-    }
-}
+// const get_add_secret_page = (req, res) => {
+//     try {
+//         return res.status(200).sendFile(path.join(__dirname, '../views/html/add_secret.html'));
+//     } catch (error) {
+//         console.error('[-] Error in user route:', error.message);
+//         return res.status(500).json({
+//             error: error.message
+//         });
+//     }
+// }
 
 const add_secret = async (req, res) => {
     try {
@@ -125,6 +125,6 @@ module.exports = {
     get_secrets,
     get_secrets_page,
     add_secret,
-    get_add_secret_page,
+    // get_add_secret_page,
     delete_secret
 };
