@@ -186,7 +186,7 @@ module.exports = {
   async login(req, res) {
     try {
       if (req.cookies.login) {
-        return res.status(200).send({ message: "User already logged in!" });
+        return res.status(200).json({ message: "User already logged in!" });
       }
 
       const { role, email, password } = req.body;
@@ -211,6 +211,7 @@ module.exports = {
         res.cookie(COOKIES.IV, user.iv, { maxAge: 86400000, httpOnly: false });
 
         // return res.status(200).json({ message: `${role} has logged in`, details: user });
+        console.log('user logged in');
         return res.redirect('/user');
       } else {
         return res.status(401).json({ message: "Invalid credentials!" });

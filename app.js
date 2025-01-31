@@ -27,8 +27,8 @@ app.use(log); // logging method and url of all incomming request
 app.set('views', path.join(__dirname, 'views')); // Set views directory
 
 // Routes for mini apps
-app.use('/user', user_routes);
-app.use('/auth', auth_routes);
+app.use('/api/user', user_routes);
+app.use('/api/auth', auth_routes);
 
 // Route for unauthorized users
 app.get('/unauthorized', (req, res) => {
@@ -38,10 +38,32 @@ app.get('/unauthorized', (req, res) => {
     res.status(401).sendFile(path.join(__dirname, '/views/html/unauthorized.html'));
 });
 
-// Home route
-app.get('/', isLoggedIn, (req, res) => {
+
+app.use('/api/auth/verify', async (req, res) => {
     try {
-        res.status(200).sendFile(path.join(__dirname, '/views/html/home.html'));
+        let token = req.cookies?.login; // Check if token exists in cookies
+        let id = is_user_authentic(token);
+        if (!id) return res.redirect('/auth/login');
+
+        let user = await Model.findById(id);
+        if (user) {
+            req.id = id; // Attach user ID to the request object
+            next(); // Allow access to the next middleware or route
+        } else {
+            return res.redirect('/auth/login');
+        }
+    } catch (error) {
+        console.log('[-] Authorization error:', error.message);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+})
+
+app.use(express.static(__dirname + '/views'));
+
+// Home route
+app.get('*', (req, res) => {
+    try {
+        res.status(200).sendFile(path.join(__dirname, '/views/index.html'));
     } catch (error) {
         console.error('[-] Error in home route:', error.message);
         res.status(500).json({
@@ -51,9 +73,9 @@ app.get('/', isLoggedIn, (req, res) => {
 });
 
 // Handle 404 errors
-app.use((req, res) => {
-    return res.status(404).sendFile(path.join(__dirname, '/views/html/404.html'));
-});
+// app.use((req, res) => {
+//     return res.status(404).sendFile(path.join(__dirname, '/views/html/404.html'));
+// });
 
 // Start the server
 const PORT = process.env.PORT || 3000;
