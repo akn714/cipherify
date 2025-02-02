@@ -10,7 +10,7 @@ const { authorize_user, isLoggedIn } = require('../controllers/auth.controller')
 
 const router = express.Router();
 
-router.use(isLoggedIn);
+// router.use(isLoggedIn);
 router.use(authorize_user); // Middleware for authentication (applied to every private route)
 router.get('/', controller.get_secrets_page);
 // router.get('/add-secret', controller.get_add_secret_page);

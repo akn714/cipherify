@@ -41,14 +41,20 @@ const authorize_user = async (req, res, next) => {
     try {
         let token = req.cookies?.login; // Check if token exists in cookies
         let id = is_user_authentic(token);
-        if (!id) return res.redirect('/auth/login');
+        if (!id) return res.status(401).json({
+          message: 'Invalid token!'
+          // redirect: '/auth/login'
+        });
 
         let user = await Model.findById(id);
         if (user) {
-            req.id = id; // Attach user ID to the request object
-            next(); // Allow access to the next middleware or route
+          req.id = id; // Attach user ID to the request object
+          next(); // Allow access to the next middleware or route
         } else {
-            return res.redirect('/auth/login');
+          console.log(`[+] user id ${req.id} not found.`);
+          return res.status(404).json({
+            message: 'User not found!'
+          });
         }
     } catch (error) {
         console.log('[-] Authorization error:', error.message);
@@ -130,8 +136,8 @@ module.exports = {
 
   async signup(req, res) {
     try {
-      const role = ROLES.USER; // (update) you can provide roles from req.body
-      if (!role) return res.json({ message: "Role is required!" });
+      const role = ROLES.USER; // update: you can provide roles from req.body
+      if (!role) return res.status(400).json({ message: "Role is required!" });
 
       // const iv = crypto.getRandomValues(new Uint8Array(12)); // Generate a random initialization vector (IV) for encrypting and decrypting secrets
 
@@ -153,7 +159,7 @@ module.exports = {
       console.log(userData);
 
       const [isValid, validationMessage] = await validateUserData(role, userData);
-      if (!isValid) return res.json({ message: validationMessage });
+      if (!isValid) return res.status(401).json({ message: validationMessage });
 
       const model = role === ROLES.ADMIN ? Model : Model; // (update) you can add an admin model also
       
@@ -169,14 +175,17 @@ module.exports = {
       const user = await Model.create(userData);
 
       if (user) {
-        console.log(user)
+        console.log(user);
         const token = jwt.sign({ payload: user["_id"] }, JWT_KEY);
         res.cookie(COOKIES.LOGIN, token, { maxAge: 86400000, httpOnly: true });
         res.cookie(COOKIES.ROLE, role, { maxAge: 86400000, httpOnly: true });
         res.cookie(COOKIES.IV, req.body.iv, { maxAge: 86400000, httpOnly: true });
 
-        // return res.status(200).json({ message: `${role} signed up`, data: user });
-        return res.redirect('/user');
+        return res.status(200).json({
+          message: `user signed up`,
+          data: user
+        });
+        // return res.redirect('/user');
       }
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -198,25 +207,31 @@ module.exports = {
         // user
         [USER_KEYS.EMAIL]: email
       };
+      console.log(req.body);
+      console.log(query);
 
       const model = role === ROLES.ADMIN ? Model : Model; // (update) you can also add admin model
       const user = await model.findOne(query);
       if (!user) return res.status(404).json({ message: MESSAGE.UserNotFound });
 
       const isValid = await bcrypt.compare(password, user.password);
-      if (isValid) {
-        const token = jwt.sign({ payload: user["_id"] }, JWT_KEY);
-        res.cookie(COOKIES.LOGIN, token, { maxAge: 86400000, httpOnly: true });
-        res.cookie(COOKIES.ROLE, role, { maxAge: 86400000, httpOnly: true });
-        res.cookie(COOKIES.IV, user.iv, { maxAge: 86400000, httpOnly: false });
+      console.log(user)
+      if(user){
+        if (isValid) {
+          const token = jwt.sign({ payload: user["_id"] }, JWT_KEY);
+          res.cookie(COOKIES.LOGIN, token, { maxAge: 86400000, httpOnly: true });
+          res.cookie(COOKIES.ROLE, role, { maxAge: 86400000, httpOnly: true });
+          res.cookie(COOKIES.IV, user.iv, { maxAge: 86400000, httpOnly: false });
 
-        // return res.status(200).json({ message: `${role} has logged in`, details: user });
-        console.log('user logged in');
-        return res.redirect('/user');
-      } else {
-        return res.status(401).json({ message: "Invalid credentials!" });
+          // return res.status(200).json({ message: `${role} has logged in`, details: user });
+          console.log('user logged in');
+          return res.redirect('/user');
+        } else {
+          return res.status(401).json({ message: "Invalid credentials!" });
+        }
       }
     } catch (error) {
+      console.log(error)
       res.status(500).json({ error: error.message });
     }
   },
