@@ -22,9 +22,9 @@ const { isLoggedIn } = require('./controllers/auth.controller');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Parse form data
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public'))); // Serve static files
+// app.use(express.static(path.join(__dirname, 'public'))); // Serve static files
 app.use(log); // logging method and url of all incomming request
-app.set('views', path.join(__dirname, 'views')); // Set views directory
+// app.set('views', path.join(__dirname, 'views')); // Set views directory
 
 // Routes for mini apps
 app.use('/api/user', user_routes);
@@ -58,19 +58,19 @@ app.use('/api/auth/verify', async (req, res) => {
     }
 })
 
-app.use(express.static(__dirname + '/views'));
+// app.use(express.static(__dirname + '/views'));
 
 // Home route
-app.get('*', (req, res) => {
-    try {
-        res.status(200).sendFile(path.join(__dirname, '/views/index.html'));
-    } catch (error) {
-        console.error('[-] Error in home route:', error.message);
-        res.status(500).json({
-            error: error.message
-        });
-    }
-});
+// app.get('*', (req, res) => {
+//     try {
+//         res.status(200).sendFile(path.join(__dirname, '/views/index.html'));
+//     } catch (error) {
+//         console.error('[-] Error in home route:', error.message);
+//         res.status(500).json({
+//             error: error.message
+//         });
+//     }
+// });
 
 // Handle 404 errors
 // app.use((req, res) => {

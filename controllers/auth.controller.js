@@ -40,6 +40,7 @@ function is_user_authentic(token) {
 const authorize_user = async (req, res, next) => {
     try {
         let token = req.cookies?.login; // Check if token exists in cookies
+        console.log(req.cookies)
         let id = is_user_authentic(token);
         if (!id) return res.status(401).json({
           message: 'Invalid token!'
@@ -177,9 +178,9 @@ module.exports = {
       if (user) {
         console.log(user);
         const token = jwt.sign({ payload: user["_id"] }, JWT_KEY);
-        res.cookie(COOKIES.LOGIN, token, { maxAge: 86400000, httpOnly: true });
-        res.cookie(COOKIES.ROLE, role, { maxAge: 86400000, httpOnly: true });
-        res.cookie(COOKIES.IV, req.body.iv, { maxAge: 86400000, httpOnly: true });
+        res.cookie(COOKIES.LOGIN, token, { maxAge: 86400000, httpOnly: false });
+        res.cookie(COOKIES.ROLE, role, { maxAge: 86400000, httpOnly: false });
+        res.cookie(COOKIES.IV, req.body.iv, { maxAge: 86400000, httpOnly: false });
 
         return res.status(200).json({
           message: `user signed up`,
@@ -219,8 +220,8 @@ module.exports = {
       if(user){
         if (isValid) {
           const token = jwt.sign({ payload: user["_id"] }, JWT_KEY);
-          res.cookie(COOKIES.LOGIN, token, { maxAge: 86400000, httpOnly: true });
-          res.cookie(COOKIES.ROLE, role, { maxAge: 86400000, httpOnly: true });
+          res.cookie(COOKIES.LOGIN, token, { maxAge: 86400000, httpOnly: false });
+          res.cookie(COOKIES.ROLE, role, { maxAge: 86400000, httpOnly: false });
           res.cookie(COOKIES.IV, user.iv, { maxAge: 86400000, httpOnly: false });
 
           // return res.status(200).json({ message: `${role} has logged in`, details: user });
