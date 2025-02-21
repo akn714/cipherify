@@ -10,16 +10,17 @@ const { USER_KEYS } = require('../utility/util')
 
 
 const get_secrets = async (req, res) => {
+    console.log('[+] get_secrets')
     try {
         // let student = await studentModel.find({[USER_KEYS]: year}, `${S_KEYS.NAME} ${S_KEYS.ROLL_NO} ${S_KEYS.BRANCH} ${S_KEYS.YEAR}`);
         let user = await Model.findById(req.id);
-        if(user){
+        if (user) {
             console.log(user.secrets)
             return res.status(200).json({
                 data: user.secrets
             });
         }
-        else{
+        else {
             return res.status(404).json({
                 message: 'User not found!'
             })
@@ -65,17 +66,17 @@ const add_secret = async (req, res) => {
             PASSWORD: req.body.password,
             IV: req.body.iv
         };
-        
+
         // Fetch the user, modify the array, and save
         Model.findById(req.id)
             .then(user => {
                 if (!user) {
                     throw new Error('User not found');
                 }
-        
+
                 // Add the new object to the secrets array
                 user.secrets.push(newSecret);
-        
+
                 // Save the updated user
                 return user.save();
             })
@@ -85,10 +86,16 @@ const add_secret = async (req, res) => {
             .catch(err => {
                 console.error(err);
             });
-        
-        res.redirect('/user');
+        console.log('ended')
+        return res.status(200).json({
+            message: 'Secret Added!'
+        })
+
+        // res.redirect('/user');
     } catch (error) {
-        
+        return res.status(500).json({
+            error: err
+        });
     }
 }
 
@@ -115,7 +122,7 @@ const delete_secret = async (req, res) => {
                 updatedSecrets: updatedSecrets.secrets
             });
         }
-        
+
         return res.status(404).json({ error: 'User not found or URL does not exist' });
     } catch (error) {
         console.error('[-] Error while deleting secret:', error);

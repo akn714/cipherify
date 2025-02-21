@@ -22,6 +22,15 @@
 - [ ] adding form validation in login like done in signup
 - [ ] adding popup for messages
 
+# Todos (frontend)
+- logout not implemented properly
+- implementing ProtechedRoute properly (fixing /api/auth/verify route in backend)
+
+### Todos when merging frontend and backend
+- [ ] removing "sameSite: 'None'" from cookies during login and signup
+- [ ] setting logout properly in frontend
+- [ ] removing hard coded urls in fetch api 'http://localhost:3000/' -> '/'
+
 ### Workflow
 - signup
     - user sign ups

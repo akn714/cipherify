@@ -40,7 +40,7 @@ function is_user_authentic(token) {
 const authorize_user = async (req, res, next) => {
     try {
         let token = req.cookies?.login; // Check if token exists in cookies
-        console.log(req.cookies)
+        // console.log('[+] cookies:', req.cookies)
         let id = is_user_authentic(token);
         if (!id) return res.status(401).json({
           message: 'Invalid token!'
@@ -179,7 +179,7 @@ module.exports = {
         console.log(user);
         const token = jwt.sign({ payload: user["_id"] }, JWT_KEY);
         res.cookie(COOKIES.LOGIN, token, { maxAge: 86400000, httpOnly: false });
-        res.cookie(COOKIES.ROLE, role, { maxAge: 86400000, httpOnly: false });
+        // res.cookie(COOKIES.ROLE, role, { maxAge: 86400000, httpOnly: false });
         res.cookie(COOKIES.IV, req.body.iv, { maxAge: 86400000, httpOnly: false });
 
         return res.status(200).json({
@@ -199,20 +199,14 @@ module.exports = {
         return res.status(200).json({ message: "User already logged in!" });
       }
 
-      const { role, email, password } = req.body;
-      const query = role === ROLES.ADMIN
-      ? {
-        // admin
-        [USER_KEYS.EMAIL]: email
-      } : {
-        // user
+      const { email, password } = req.body;
+      const query = {
         [USER_KEYS.EMAIL]: email
       };
       console.log(req.body);
       console.log(query);
 
-      const model = role === ROLES.ADMIN ? Model : Model; // (update) you can also add admin model
-      const user = await model.findOne(query);
+      const user = await Model.findOne(query);
       if (!user) return res.status(404).json({ message: MESSAGE.UserNotFound });
 
       const isValid = await bcrypt.compare(password, user.password);
@@ -220,13 +214,13 @@ module.exports = {
       if(user){
         if (isValid) {
           const token = jwt.sign({ payload: user["_id"] }, JWT_KEY);
-          res.cookie(COOKIES.LOGIN, token, { maxAge: 86400000, httpOnly: false });
-          res.cookie(COOKIES.ROLE, role, { maxAge: 86400000, httpOnly: false });
-          res.cookie(COOKIES.IV, user.iv, { maxAge: 86400000, httpOnly: false });
+          res.cookie(COOKIES.LOGIN, token, { maxAge: 86400000, httpOnly: false, sameSite: 'None' });
+          // res.cookie(COOKIES.ROLE, role, { maxAge: 86400000, httpOnly: false });
+          res.cookie(COOKIES.IV, user.iv, { maxAge: 86400000, httpOnly: false, sameSite: 'None' });
 
-          // return res.status(200).json({ message: `${role} has logged in`, details: user });
           console.log('user logged in');
-          return res.redirect('/user');
+          return res.status(200).json({ message: `User Logged In!`, details: user });
+          // return res.redirect('/user');
         } else {
           return res.status(401).json({ message: "Invalid credentials!" });
         }
@@ -241,7 +235,7 @@ module.exports = {
     try {
       if (req.cookies.login) {
         res.clearCookie(COOKIES.LOGIN);
-        res.clearCookie(COOKIES.ROLE);
+        // res.clearCookie(COOKIES.ROLE);
         res.clearCookie(COOKIES.IV);
       }
       res.redirect("/");
