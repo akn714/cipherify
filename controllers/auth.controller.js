@@ -121,6 +121,7 @@ async function validateUserData(role, data) {
 module.exports = {
   authorize_user,
   isLoggedIn,
+  is_user_authentic,
   get_signup_page(req, res) {
     if (req.cookies.login) {
       return res.send({ message: "Ongoing session detected!" });

@@ -52,22 +52,22 @@ async function encrypt(pin, inputString, IV) {
     return btoa(String.fromCharCode(...new Uint8Array(encrypted))); // Convert to Base64;
 }
 
-async function decrypt(pin, encryptedData, IV) {
-    const key = await deriveKey(pin);
-    const decoder = new TextDecoder();
-    const encryptedBuffer = Uint8Array.from(atob(encryptedData), (c) => c.charCodeAt(0));
+    async function decrypt(pin, encryptedData, IV) {
+        const key = await deriveKey(pin);
+        const decoder = new TextDecoder();
+        const encryptedBuffer = Uint8Array.from(atob(encryptedData), (c) => c.charCodeAt(0));
 
-    const decrypted = await crypto.subtle.decrypt(
-        {
-            name: "AES-GCM",
-            iv: IV
-        },
-        key,
-        encryptedBuffer
-    );
+        const decrypted = await crypto.subtle.decrypt(
+            {
+                name: "AES-GCM",
+                iv: IV
+            },
+            key,
+            encryptedBuffer
+        );
 
-    return decoder.decode(decrypted);
-}
+        return decoder.decode(decrypted);
+    }
 
 // Example usage:
 // let IV = crypto.getRandomValues(new Uint8Array(12));
