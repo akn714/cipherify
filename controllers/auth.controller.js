@@ -143,29 +143,22 @@ module.exports = {
 
       // const iv = crypto.getRandomValues(new Uint8Array(12)); // Generate a random initialization vector (IV) for encrypting and decrypting secrets
 
-      const userData = role === ROLES.ADMIN
-        ? { // admin data
+      const userData = { // user data
             [USER_KEYS.NAME]: req.body.name,
             [USER_KEYS.EMAIL]: req.body.email,
             [USER_KEYS.PASSWORD]: req.body.password,
             [USER_KEYS.CONFIRM_PASSWORD]: req.body.confirmPassword,
-            [USER_KEYS.IV]: req.body.iv
-          }
-        : { // user data
-            [USER_KEYS.NAME]: req.body.name,
-            [USER_KEYS.EMAIL]: req.body.email,
-            [USER_KEYS.PASSWORD]: req.body.password,
-            [USER_KEYS.CONFIRM_PASSWORD]: req.body.confirmPassword,
-            [USER_KEYS.IV]: req.body.iv
+            // [USER_KEYS.IV]: req.body.iv
           };
       console.log(userData);
 
       const [isValid, validationMessage] = await validateUserData(role, userData);
       if (!isValid) return res.status(401).json({ message: validationMessage });
 
-      const model = role === ROLES.ADMIN ? Model : Model; // (update) you can add an admin model also
+      // const model = role === ROLES.ADMIN ? Model : Model; // update: you can add an admin model also
       
       const userExists = await Model.findOne({ [USER_KEYS.EMAIL]: req.body.email });
+
       if (userExists) {
         // 409 - conflict (user already exist)
         console.log(`[-] User already exist. ${userData[USER_KEYS.EMAIL]}`)
@@ -181,7 +174,7 @@ module.exports = {
         const token = jwt.sign({ payload: user["_id"] }, JWT_KEY);
         res.cookie(COOKIES.LOGIN, token, { maxAge: 86400000, httpOnly: false });
         // res.cookie(COOKIES.ROLE, role, { maxAge: 86400000, httpOnly: false });
-        res.cookie(COOKIES.IV, req.body.iv, { maxAge: 86400000, httpOnly: false });
+        // res.cookie(COOKIES.IV, req.body.iv, { maxAge: 86400000, httpOnly: false });
 
         return res.status(200).json({
           message: `user signed up`,
@@ -190,6 +183,7 @@ module.exports = {
         // return res.redirect('/user');
       }
     } catch (error) {
+      console.log(error.message)
       res.status(500).json({ error: error.message });
     }
   },
@@ -217,7 +211,7 @@ module.exports = {
           const token = jwt.sign({ payload: user["_id"] }, JWT_KEY);
           res.cookie(COOKIES.LOGIN, token, { maxAge: 86400000, httpOnly: false, sameSite: 'None' });
           // res.cookie(COOKIES.ROLE, role, { maxAge: 86400000, httpOnly: false });
-          res.cookie(COOKIES.IV, user.iv, { maxAge: 86400000, httpOnly: false, sameSite: 'None' });
+          // res.cookie(COOKIES.IV, user.iv, { maxAge: 86400000, httpOnly: false, sameSite: 'None' });
 
           console.log('user logged in');
           return res.status(200).json({ message: `User Logged In!`, details: user });
@@ -237,7 +231,7 @@ module.exports = {
       if (req.cookies.login) {
         res.clearCookie(COOKIES.LOGIN);
         // res.clearCookie(COOKIES.ROLE);
-        res.clearCookie(COOKIES.IV);
+        // res.clearCookie(COOKIES.IV);
       }
       res.redirect("/");
     } catch (error) {
